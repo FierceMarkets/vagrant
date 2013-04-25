@@ -39,10 +39,10 @@ Vagrant::Config.run do |config|
   # config.vm.share_folder "v-data", "/vagrant_data", "../data"
 
   config.vm.share_folder("v-root", "/vagrant", ".")
-  config.vm.share_folder("files", "/vagrant/drupal/sites/default/files", "./drupal/sites/default/files", :owner => "apache", :group => "apache")
+  config.vm.share_folder("files", "/vagrant/drupal/sites/default/files", "./drupal/sites/default/files", {:extra => 'dmode=777,fmode=777'})
 
   # share folder for the libraries repo
-  config.vm.share_folder "libraries", "/libraries", "../libraries"
+  # config.vm.share_folder "libraries", "/libraries", "../libraries"
 
   # Enable provisioning with Puppet stand alone.  Puppet manifests
   # are contained in a directory path relative to this Vagrantfile.
