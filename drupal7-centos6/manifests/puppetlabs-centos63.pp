@@ -1,64 +1,80 @@
-class updates {
-
-  exec { 'yum upgrade':
-    command => '/usr/bin/yum upgrade -y',
-    before => Package['php'],
-  }
-}
-
 class php {
 
-  package {'php':
+  package {'php53u':
     ensure => present,
     before => File['/etc/php.ini'],
+    require => Exec["yum upgrade"],
+    notify => Service['httpd']
   }
 
-  package { "php-cli":
+  package { "php53u-cli":
     ensure  => present,
+    require => Package['php53u'],
+    notify => Service['httpd']
   }
 
-  package { "php-common":
+  package { "php53u-common":
     ensure  => present,
+    require => Package['php53u'],
+    notify => Service['httpd']
   }
 
-  package { "php-devel":
+  package { "php53u-devel":
     ensure  => present,
+    require => Package['php53u'],
+    notify => Service['httpd']
   }
 
-  package { "php-pear":
+  package { "php53u-pear":
     ensure  => present,
+    require => Package['php53u'],
+    notify => Service['httpd']
   }
 
-  package { "php-pdo":
+  package { "php53u-pdo":
     ensure  => present,
+    require => Package['php53u'],
+    notify => Service['httpd']
   }
 
-  package { "php-mysql":
+  package { "php53u-mysql":
     ensure  => present,
+    require => Package['php53u'],
+    notify => Service['httpd']
   }
 
-  package { "php-gd":
+  package { "php53u-gd":
     ensure  => present,
+    require => Package['php53u'],
+    notify => Service['httpd']
   }
 
-#  package { "php-mcrypt":
+#  package { "php53u-mcrypt":
 #    ensure  => present,
 #  }
 
-  package { "php-intl":
+  package { "php53u-intl":
     ensure  => present,
+    require => Package['php53u'],
+    notify => Service['httpd']
   }
 
-  package { "php-mbstring":
+  package { "php53u-mbstring":
     ensure  => present,
+    require => Package['php53u'],
+    notify => Service['httpd']
   }
 
-  package { "php-pecl-apc":
+  package { "php53u-pecl-apc":
     ensure  => present,
+    require => Package['php53u'],
+    notify => Service['httpd']
   }
 
-  package { "php-xml":
+  package { "php53u-xml":
     ensure  => present,
+    require => Package['php53u'],
+    notify => Service['httpd']
   }
 
   file {'/etc/php.ini':
@@ -69,18 +85,18 @@ class php {
 class pear {
   exec {'pear upgrade PEAR':
     command => '/usr/bin/pear upgrade PEAR',
-    require => Package['php-pear']
+    require => Package['php53u-pear']
   }
 
   exec {'pear channel update':
     command => '/usr/bin/pear channel-update pear.php.net',
-    require => Package['php-pear']
+    require => Package['php53u-pear']
   }
 
-  exec {'pear upgrade':
-    command => '/usr/bin/pear upgrade',
-    require => Exec['pear upgrade PEAR']
-  }
+  # exec {'pear upgrade':
+  #   command => '/usr/bin/pear upgrade',
+  #   require => Exec['pear upgrade PEAR']
+  # }
 
   # exec {'install xhprof':
   #   command => '/usr/bin/pecl install xhprof-0.9.2',
@@ -91,7 +107,7 @@ class pear {
 class drush {
   exec {'drush discover':
     command => '/usr/bin/pear channel-discover pear.drush.org',
-    require => Package['php-pear']
+    require => Package['php53u-pear']
   }
 
   exec {'install drush':
@@ -149,6 +165,7 @@ class mysql {
   package {'mysql':
     ensure => 'present',
     before => Package['mysql-server'],
+    require => Exec['yum upgrade']
   }
 
   package {'mysql-server':
@@ -179,13 +196,27 @@ class iptables {
   }
 }
 
+class base {
+   yumrepo { "IUS":
+      baseurl => "http://dl.iuscommunity.org/pub/ius/stable/CentOS/6/x86_64/",
+      descr => "IUS Community repository",
+      enabled => 1,
+      gpgcheck => 0
+   }
+
+  exec { 'yum upgrade':
+    command => '/usr/bin/yum upgrade -y',
+    require => Yumrepo["IUS"]
+  }
+}
+
 class hosts {
   exec {'add-db01-to-hosts':
     command => '/bin/echo "127.0.0.1  db01" >> /etc/hosts'
   }
 }
 
-include updates
+include base
 include php
 include pear
 include drush
