@@ -38,8 +38,8 @@ Vagrant::Config.run do |config|
   # folder, and the third is the path on the host to the actual folder.
   # config.vm.share_folder "v-data", "/vagrant_data", "../data"
 
-  config.vm.share_folder("v-root", "/vagrant", ".")
-  config.vm.share_folder("files", "/vagrant/drupal/sites/default/files", "./drupal/sites/default/files", {:extra => 'dmode=777,fmode=777'})
+  config.vm.share_folder("vagrant-root", "/vagrant", ".")
+  config.vm.share_folder("files", "/vagrant/drupal/sites/default/files", "./drupal/sites/default/files", :mount_options => ["dmode=777","fmode=666"])
 
   # share folder for the libraries repo
   # config.vm.share_folder "libraries", "/libraries", "../libraries"
